@@ -43,6 +43,9 @@
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
+volatile uint32_t pwm_value;
+volatile float Avg_vol;
+volatile float Duty_cycle;
 
 /* USER CODE END PV */
 
@@ -56,6 +59,7 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void Test_Pwm(void);
 
 /* USER CODE END 0 */
 
@@ -100,6 +104,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	 Test_Pwm();
   }
   /* USER CODE END 3 */
 }
@@ -229,6 +234,25 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void Test_Pwm(void)
+{
+    // 1 ms pulse
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 1000);
+	pwm_value = __HAL_TIM_GET_COMPARE(&htim3, TIM_CHANNEL_1); //calculating Pwm value
+
+	HAL_Delay(1000);
+
+	Duty_cycle=((float)pwm_value/20000 *100.0f);
+
+	Avg_vol=((3.3f* Duty_cycle) /100.0f);  // buffer to read current voltage
+    // 1.5 ms pulse
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 1500);
+    HAL_Delay(1000);
+
+    // 2 ms pulse
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 2000);
+    HAL_Delay(1000);
+}
 
 /* USER CODE END 4 */
 
